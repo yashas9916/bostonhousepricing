@@ -126,3 +126,5 @@ print(op)
 #Now create a git repository
 #clone your loccal folder to git reposiory
 
+#creating pickle file for scalar
+pickle.dump(scalar,open('scaling.pkl','wb'))
