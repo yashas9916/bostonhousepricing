@@ -1,0 +1,128 @@
+#1)Linear_Reg_Implementation With Dockers,Github Action.
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+#Load the Boston House Pricing Dataset
+boston = pd.read_csv("/Users/yashas/Documents/ML_Project/MLP1_BostonHousing/BostonHousing.csv")
+
+print(type(boston))
+# bunch = see the keys
+
+print(boston.keys())
+
+# Lets check the description of dataset, input feature
+
+#Preparaing the Dataset
+data=boston
+
+
+print(data.head())
+
+#Basic checks
+#check for null values
+print(data.isnull().sum())
+
+#EDA
+#Correlation
+#Analysis of correlated Featutres
+print(data.corr())
+
+#renaming colum medv to price
+data.rename(columns={'medv':'price'},inplace=True)
+
+# Independent and dependent features
+x=data.iloc[:,:-1]
+y=data.iloc[:,-1]
+
+print('x= ',x.head())
+print('y= ',y.head())
+
+
+#Train Test Split
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=42)
+
+print(x_train.shape)
+print(x_test.shape)
+print(y_train.shape)
+print(y_test.shape)
+
+#standardize the dataset
+from sklearn.preprocessing import StandardScaler
+scalar=StandardScaler()
+
+x_train=scalar.fit_transform(x_train)
+x_test=scalar.transform(x_test)
+
+
+#Model Training
+
+from sklearn.linear_model import LinearRegression
+LR=LinearRegression()
+LR.fit(x_train,y_train)
+
+#print the coefficients and intercept
+print('Coefficients= ',LR.coef_)
+print('intercept= ',LR.intercept_) 
+
+#on which parameters the model has been trained
+print(LR.get_params()) 
+
+
+#Prediction with test data
+y_pred=LR.predict(x_test)
+
+#plot a scatter plot for prediction
+#plotting of values is linear, if it is linear then your model has predicted well
+plt.scatter(y_test,y_pred)
+
+#prediction with residuals
+residual=y_test-y_pred
+
+#plot this residulas
+sns.displot(residual,kind='kde')
+#Our main aim is to get this as a normal distribution
+#if ND=good model performance
+
+# Errror
+from sklearn.metrics import mean_absolute_error,mean_squared_error
+print('mean_absolute_error',mean_absolute_error(y_test,y_pred))
+print('mean_squared_error: ',mean_squared_error(y_test,y_pred))
+
+
+#R2 score
+from sklearn.metrics import r2_score
+print('r2_score',r2_score(y_test,y_pred))
+
+ 
+# ** New Data Prediction **
+# 
+# Lets predict for 1st row
+test=[0.00632,18,2.31,0,0.538,6.575,65.2,4.09,1,296,15.3,396.9,4.98]
+test_data=np.array(test)
+#convering to shape(1,13)
+test_data=test_data.reshape(1,-1)
+print(test_data.shape)
+
+#Scale the test data
+scale_test_data=scalar.transform(test_data)
+test_pred=LR.predict(scale_test_data)
+print(test_pred)
+
+# ** Picking The Model file For Deployment **
+
+import pickle
+pickle.dump(LR,open('reg_model.pkl','wb'))
+
+pickled_model=pickle.load(open('reg_model.pkl','rb'))
+
+#checking the test data output 
+op=pickled_model.predict(scale_test_data)
+print(op)
+#hence both your model and pickled model is giving the same output.
+
+#Now create a git repository
+#clone your loccal folder to git reposiory
+
