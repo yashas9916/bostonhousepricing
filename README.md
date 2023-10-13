@@ -25,3 +25,6 @@ git config --global user.email 'yashas.suresh1@gmail.com'
 
 - git add . 
 - git status
+- git commit -m 'This commit includes requir
+ements.txt and readme file'
+- git push origin main 
